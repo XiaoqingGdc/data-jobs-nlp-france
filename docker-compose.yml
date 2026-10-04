@@ -1,0 +1,41 @@
+# n8n + PostgreSQL — collecte quotidienne des offres France Travail
+# Lancer :  docker compose up -d
+# Arrêter : docker compose down        (les données restent dans les volumes)
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped            # redémarre tout seul avec Docker Desktop
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      TZ: Europe/Paris
+    ports:
+      - "5432:5432"                    # pour DBeaver et Power BI (localhost:5432)
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro   # exécuté au 1er démarrage seulement
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"                    # interface : http://localhost:5678
+    environment:
+      GENERIC_TIMEZONE: Europe/Paris   # le déclencheur "chaque jour à 8h" suit l'heure de Paris
+      TZ: Europe/Paris
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pg_data:
+  n8n_data:
