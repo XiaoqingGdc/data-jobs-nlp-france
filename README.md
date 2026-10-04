@@ -32,8 +32,27 @@ Analyse NLP de **443 offres d'emploi** Data Analyst, Data Engineer et Data Scien
 | Exploration | Dictionnaire de compétences (regex, contrôlé manuellement), WordClouds, termes distinctifs TF-IDF |
 | Robustesse | Analyse de sensibilité sur l'émetteur dominant (21 % des offres Data Analyst) |
 | Modélisation | Bag of Words / TF-IDF + régression logistique (F1 macro, matrice de confusion, analyse des erreurs) |
-| Restitution | Exports CSV prêts pour un dashboard Power BI (à venir) |
+| Restitution | Exports CSV → dashboard Power BI (2 pages) |
 | Automatisation | Collecte quotidienne n8n → PostgreSQL, sous Docker |
+
+## Dashboard Power BI
+
+Les exports de la partie 7 du notebook alimentent un dashboard interactif de deux pages, filtrable par métier.
+
+**Vue d'ensemble** : volume d'offres, part des offres accessibles aux débutants et des CDI, répartition par métier, par zone et par type de contrat.
+
+![Dashboard – Vue d'ensemble](image/dashboard_vue_ensemble.png)
+
+**Compétences** : compétences les plus citées et heatmap compétences × métier.
+
+![Dashboard – Compétences](image/dashboard_competences.png)
+
+| Élément | Choix |
+|---|---|
+| Modèle | `offres_clean` (une ligne par offre) relié en 1:\* à `competences` (une ligne par offre et par compétence citée, obtenue en dépivotant les colonnes de compétences dans Power Query) |
+| Mesures | Regroupées dans une table dédiée : `Nb offres`, `% débutants`, `% CDI`, `% offres citant` |
+| Interactivité | Segment *Métier* synchronisé entre les deux pages ; la carte « Offres Data Analyst » est exclue de ses interactions |
+| Contrôle | Les pourcentages du dashboard ont été comparés à ceux du notebook : ils sont identiques (ex. SQL 53,3 %, Power BI 49,3 % pour les Data Analysts) |
 
 ## Limites
 
@@ -62,7 +81,7 @@ Les colonnes `first_seen` et `last_seen` permettront de mesurer **la durée de p
 
 - Brancher le notebook sur PostgreSQL pour analyser l'évolution dans le temps et, avec assez de données, le marché nantais.
 - Extraction des salaires (renseignés dans environ un tiers des offres).
-- Dashboard Power BI.
+- Connecter le dashboard à PostgreSQL (compétences détectées directement dans n8n) pour une actualisation quotidienne et une page « Évolution » (nouvelles offres par semaine, durée de publication).
 
 ## Reproduire
 
@@ -85,6 +104,10 @@ docker compose up -d   # lit .env ; PostgreSQL crée les tables au premier déma
 
 Ouvrir n8n sur `http://localhost:5678`, importer `n8n/collecte_offres.json`, puis créer deux identifiants : *Postgres* (hôte `postgres`, port 5432) et *OAuth2 API* (France Travail, grant type *Client Credentials*).
 
+**Dashboard**
+
+Ouvrir `dashboard/dashboard_offres_data.pbix` avec Power BI Desktop. Si les fichiers ont été déplacés, mettre à jour le chemin de `data/processed/offres_clean.csv` (*Transformer les données → Paramètres de la source de données*).
+
 ## Structure
 
 ```
@@ -101,8 +124,11 @@ nlp-offres-data/
 ├── image/
 │   ├── heatmap_competences.png
 │   ├── wordclouds.png
-│   └── n8n_workflow.png
-├── dashboard/                      # fichier Power BI (à venir)
+│   ├── n8n_workflow.png
+│   ├── dashboard_vue_ensemble.png
+│   └── dashboard_competences.png
+├── dashboard/
+│   └── dashboard_offres_data.pbix  # dashboard Power BI (2 pages)
 ├── docker-compose.yml              # n8n + PostgreSQL
 ├── .env.example
 ├── requirements.txt
