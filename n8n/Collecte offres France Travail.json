@@ -1,0 +1,444 @@
+{
+  "name": "Collecte offres France Travail",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        -208
+      ],
+      "id": "e6455fbd-dfbd-4754-aaa1-5d190afc2b48",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://api.francetravail.io/partenaire/offresdemploi/v2/offres/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "motsCles",
+              "value": "={{ $json.motsCles }}"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "range",
+                    "value": "={{ $pageCount * 150 }}-{{ $pageCount * 150 + 149 }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.resultats || $response.body.resultats.length < 150 }}",
+              "limitPagesFetched": true,
+              "maxRequests": 8,
+              "requestInterval": 200
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -160,
+        -208
+      ],
+      "id": "a5f6d858-d021-49fa-90f6-11678b37f3fb",
+      "name": "HTTP Request",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "mKY5V18g6nyTvCl0",
+          "name": "France Travail API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Les 7 mots-clés de recherche (identiques au notebook)\nconst motsCles = [\n  \"data,analyst\", \"analyste,données\", \"analyste,BI\", \"business,intelligence\",\n  \"data,engineer\", \"ingénieur,data\",\n  \"data,scientist\",\n];\n\n// Un item par mot-clé : n8n appellera l'API une fois pour chacun\nreturn motsCles.map(mot => ({ json: { motsCles: mot } }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -432,
+        -208
+      ],
+      "id": "98572d9c-213d-4dc8-b4af-9c28a53fdac4",
+      "name": "Mots-clés"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "resultats",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        64,
+        -208
+      ],
+      "id": "4aa610d4-2148-4135-8826-4dbfc9618bbe",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        288,
+        -208
+      ],
+      "id": "dccdf33b-6514-4248-b97e-977751ff3a60",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Règles d'étiquetage du métier (identiques au notebook, partie 2.2)\nconst REGLES = {\n  \"Data Analyst\": /data\\s*-?\\s*analy(?!tics)|analyste\\s+(de\\s+)?(donn[ée]es|data|bi\\b)|analyste\\s+d[ée]cisionnel|\\bbi\\s+analyst|business\\s+intelligence\\s+analyst/,\n  \"Data Engineer\": /data\\s*-?\\s*engineer|analytics\\s+engineer|ing[ée]nieure?\\s+(de\\s+)?(donn[ée]es|data|big\\s*data)(?!\\s*-?\\s*(analy|scien))/,\n  \"Data Scientist\": /data\\s*-?\\s*scien|scientifique\\s+des\\s+donn[ée]es|machine\\s+learning\\s+engineer|ml\\s+engineer/,\n};\n\nfunction etiqueter(intitule) {\n  const texte = (intitule || \"\").toLowerCase();\n  const trouves = Object.keys(REGLES).filter(m => REGLES[m].test(texte));\n  if (trouves.length === 1) return trouves[0];\n  return trouves.length ? \"Mixte\" : \"Autre\";\n}\n\n// Département : \"44 - NANTES\" -> \"44\", sinon les 2 premiers chiffres du code postal\nfunction extraireDepartement(lieu) {\n  const m = (lieu.libelle || \"\").match(/^\\s*(\\d{2,3}|2[AB])\\s*-/);\n  if (m) return m[1];\n  const cp = String(lieu.codePostal || \"\");\n  return /^\\d{2}/.test(cp) ? cp.slice(0, 2) : null;\n}\n\n// Une ligne par offre, avec les mêmes colonnes que la table \"offres\"\nreturn $input.all().map(item => {\n  const o = item.json;\n  const lieu = o.lieuTravail || {};\n  return {\n    json: {\n      id: o.id,\n      intitule: o.intitule,\n      description: o.description,\n      metier: etiqueter(o.intitule),\n      date_creation: o.dateCreation,\n      date_actualisation: o.dateActualisation || null,\n      departement: extraireDepartement(lieu),\n      lieu_libelle: lieu.libelle || null,\n      type_contrat: o.typeContrat || null,\n      experience_exige: o.experienceExige || null,\n      salaire_libelle: (o.salaire || {}).libelle || null,\n      entreprise_nom: (o.entreprise || {}).nom || null,\n      raw: o,          // JSON complet, pour pouvoir re-parser plus tard\n      last_seen: new Date().toISOString().slice(0, 10),   // date du jour (AAAA-MM-JJ)\n    },\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        -208
+      ],
+      "id": "fe40bd8a-d222-44cc-9c65-ebc72de3eb2f",
+      "name": "Préparation"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "offres",
+          "mode": "list",
+          "cachedResultName": "offres"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "intitule",
+              "displayName": "intitule",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "metier",
+              "displayName": "metier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "date_creation",
+              "displayName": "date_creation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "date_actualisation",
+              "displayName": "date_actualisation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "departement",
+              "displayName": "departement",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "lieu_libelle",
+              "displayName": "lieu_libelle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "type_contrat",
+              "displayName": "type_contrat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "experience_exige",
+              "displayName": "experience_exige",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "salaire_libelle",
+              "displayName": "salaire_libelle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "salaire_min_annuel",
+              "displayName": "salaire_min_annuel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "salaire_max_annuel",
+              "displayName": "salaire_max_annuel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "entreprise_nom",
+              "displayName": "entreprise_nom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "raw",
+              "displayName": "raw",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "first_seen",
+              "displayName": "first_seen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "last_seen",
+              "displayName": "last_seen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        736,
+        -208
+      ],
+      "id": "18f71d49-85e3-40f0-9c1b-8091642aa488",
+      "name": "Enregistrement PostgreSQL",
+      "credentials": {
+        "postgres": {
+          "id": "WGnCb5wNIwxhHTK8",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -560,
+        96
+      ],
+      "id": "1bbd38d0-1ff1-4c8f-9da3-c1285e1f0b91",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Mots-clés",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mots-clés": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Préparation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Préparation": {
+      "main": [
+        [
+          {
+            "node": "Enregistrement PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Mots-clés",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b06e1d38-557e-4a04-90df-bae4e44f2fdb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "476c10ef8f048faefe0ebab02dcef1222f6cd5fa22449887290662271c2c0b79"
+  },
+  "nodeGroups": [],
+  "id": "dvpf4YqkRKZiL27i",
+  "tags": []
+}
