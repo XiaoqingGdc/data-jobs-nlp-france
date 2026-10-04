@@ -1,0 +1,65 @@
+competence,zone,pct_offres
+SQL,Hors Île-de-France,52.3
+Python,Hors Île-de-France,32.3
+R,Hors Île-de-France,3.1
+SAS,Hors Île-de-France,6.2
+VBA,Hors Île-de-France,1.5
+Power BI,Hors Île-de-France,56.9
+Tableau,Hors Île-de-France,16.9
+Excel,Hors Île-de-France,27.7
+Looker,Hors Île-de-France,3.1
+Qlik,Hors Île-de-France,9.2
+dbt,Hors Île-de-France,7.7
+Spark,Hors Île-de-France,1.5
+Airflow,Hors Île-de-France,4.6
+ETL,Hors Île-de-France,15.4
+Snowflake,Hors Île-de-France,6.2
+BigQuery,Hors Île-de-France,3.1
+Databricks,Hors Île-de-France,4.6
+Azure,Hors Île-de-France,6.2
+AWS,Hors Île-de-France,1.5
+GCP,Hors Île-de-France,4.6
+Git,Hors Île-de-France,4.6
+Docker,Hors Île-de-France,3.1
+CI/CD,Hors Île-de-France,3.1
+Statistiques,Hors Île-de-France,24.6
+Machine learning,Hors Île-de-France,4.6
+Deep learning,Hors Île-de-France,1.5
+IA générative,Hors Île-de-France,3.1
+SAP,Hors Île-de-France,4.6
+Supply chain,Hors Île-de-France,10.8
+Anglais,Hors Île-de-France,23.1
+Agile / Scrum,Hors Île-de-France,10.8
+Storytelling,Hors Île-de-France,13.8
+SQL,Île-de-France,54.0
+Python,Île-de-France,39.1
+R,Île-de-France,3.4
+SAS,Île-de-France,2.3
+VBA,Île-de-France,3.4
+Power BI,Île-de-France,43.7
+Tableau,Île-de-France,25.3
+Excel,Île-de-France,17.2
+Looker,Île-de-France,14.9
+Qlik,Île-de-France,2.3
+dbt,Île-de-France,3.4
+Spark,Île-de-France,3.4
+Airflow,Île-de-France,1.1
+ETL,Île-de-France,4.6
+Snowflake,Île-de-France,4.6
+BigQuery,Île-de-France,17.2
+Databricks,Île-de-France,8.0
+Azure,Île-de-France,8.0
+AWS,Île-de-France,3.4
+GCP,Île-de-France,16.1
+Git,Île-de-France,13.8
+Docker,Île-de-France,2.3
+CI/CD,Île-de-France,6.9
+Statistiques,Île-de-France,33.3
+Machine learning,Île-de-France,5.7
+Deep learning,Île-de-France,0.0
+IA générative,Île-de-France,2.3
+SAP,Île-de-France,1.1
+Supply chain,Île-de-France,10.3
+Anglais,Île-de-France,21.8
+Agile / Scrum,Île-de-France,25.3
+Storytelling,Île-de-France,20.7

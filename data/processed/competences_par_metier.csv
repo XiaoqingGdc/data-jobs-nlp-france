@@ -1,0 +1,97 @@
+competence,metier,pct_offres
+SQL,Data Analyst,53.3
+Python,Data Analyst,36.2
+R,Data Analyst,3.3
+SAS,Data Analyst,3.9
+VBA,Data Analyst,2.6
+Power BI,Data Analyst,49.3
+Tableau,Data Analyst,21.7
+Excel,Data Analyst,21.7
+Looker,Data Analyst,9.9
+Qlik,Data Analyst,5.3
+dbt,Data Analyst,5.3
+Spark,Data Analyst,2.6
+Airflow,Data Analyst,2.6
+ETL,Data Analyst,9.2
+Snowflake,Data Analyst,5.3
+BigQuery,Data Analyst,11.2
+Databricks,Data Analyst,6.6
+Azure,Data Analyst,7.2
+AWS,Data Analyst,2.6
+GCP,Data Analyst,11.2
+Git,Data Analyst,9.9
+Docker,Data Analyst,2.6
+CI/CD,Data Analyst,5.3
+Statistiques,Data Analyst,29.6
+Machine learning,Data Analyst,5.3
+Deep learning,Data Analyst,0.7
+IA générative,Data Analyst,2.6
+SAP,Data Analyst,2.6
+Supply chain,Data Analyst,10.5
+Anglais,Data Analyst,22.4
+Agile / Scrum,Data Analyst,19.1
+Storytelling,Data Analyst,17.8
+SQL,Data Engineer,58.9
+Python,Data Engineer,56.3
+R,Data Engineer,0.0
+SAS,Data Engineer,2.6
+VBA,Data Engineer,1.6
+Power BI,Data Engineer,23.7
+Tableau,Data Engineer,3.2
+Excel,Data Engineer,2.6
+Looker,Data Engineer,3.2
+Qlik,Data Engineer,1.6
+dbt,Data Engineer,22.6
+Spark,Data Engineer,23.7
+Airflow,Data Engineer,23.2
+ETL,Data Engineer,35.3
+Snowflake,Data Engineer,20.5
+BigQuery,Data Engineer,20.0
+Databricks,Data Engineer,20.5
+Azure,Data Engineer,23.7
+AWS,Data Engineer,16.8
+GCP,Data Engineer,24.2
+Git,Data Engineer,35.8
+Docker,Data Engineer,8.4
+CI/CD,Data Engineer,37.4
+Statistiques,Data Engineer,3.2
+Machine learning,Data Engineer,5.8
+Deep learning,Data Engineer,0.5
+IA générative,Data Engineer,8.4
+SAP,Data Engineer,3.7
+Supply chain,Data Engineer,6.3
+Anglais,Data Engineer,22.1
+Agile / Scrum,Data Engineer,25.3
+Storytelling,Data Engineer,10.5
+SQL,Data Scientist,39.6
+Python,Data Scientist,66.3
+R,Data Scientist,5.9
+SAS,Data Scientist,1.0
+VBA,Data Scientist,0.0
+Power BI,Data Scientist,8.9
+Tableau,Data Scientist,3.0
+Excel,Data Scientist,4.0
+Looker,Data Scientist,2.0
+Qlik,Data Scientist,1.0
+dbt,Data Scientist,2.0
+Spark,Data Scientist,10.9
+Airflow,Data Scientist,3.0
+ETL,Data Scientist,3.0
+Snowflake,Data Scientist,3.0
+BigQuery,Data Scientist,5.0
+Databricks,Data Scientist,4.0
+Azure,Data Scientist,10.9
+AWS,Data Scientist,8.9
+GCP,Data Scientist,11.9
+Git,Data Scientist,28.7
+Docker,Data Scientist,12.9
+CI/CD,Data Scientist,17.8
+Statistiques,Data Scientist,37.6
+Machine learning,Data Scientist,55.4
+Deep learning,Data Scientist,34.7
+IA générative,Data Scientist,44.6
+SAP,Data Scientist,0.0
+Supply chain,Data Scientist,7.9
+Anglais,Data Scientist,20.8
+Agile / Scrum,Data Scientist,9.9
+Storytelling,Data Scientist,23.8
