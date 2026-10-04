@@ -1,0 +1,7 @@
+.env
+data/raw/*
+!data/raw/.gitkeep
+.ipynb_checkpoints/
+__pycache__/
+.venv/
+identifiants_*.json
