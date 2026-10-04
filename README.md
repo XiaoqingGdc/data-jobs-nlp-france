@@ -111,6 +111,6 @@ nlp-offres-data/
 
 ## Autrice
 
-Xiaoqing ZHOU GRANDCOING — Data Analyst · [GitHub](https://github.com/XiaoqingGdc) · [LinkedIn](https://www.linkedin.com/in/xiaoqingzhougrandcoing)
+Xiaoqing ZHOU GRANDCOING — Data Analyst · [Portfolio](https://xiaoqinggdc.github.io/) · [GitHub](https://github.com/XiaoqingGdc) · [LinkedIn](https://www.linkedin.com/in/xiaoqingzhougrandcoing)
 
 Données : API Offres d'emploi, France Travail ([francetravail.io](https://francetravail.io)).
